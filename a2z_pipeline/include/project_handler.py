@@ -20,6 +20,19 @@ class ProjectHandler:
             "50_render",
             "60_postprod",
         ]
+
+        secondary_folders = {
+            "10_preprod": ["references", "rnd", "concepts", "storyboards", "animatics"],
+            "20_footage": ["hdri", "textures", "shaders", "scenes"],
+            "60_postprod": ["edits", "grades", "mov", "delivers"],
+        }
+
         for folder in main_folders:
             folder_path = os.path.join(self.path, folder)
             os.makedirs(folder_path, exist_ok=True)
+
+        for main_folder in secondary_folders:
+            folder_path = os.path.join(self.path, main_folder)
+            for subfolder in secondary_folders[main_folder]:
+                subfolder_path = os.path.join(folder_path, subfolder)
+                os.makedirs(subfolder_path, exist_ok=True)
