@@ -19,7 +19,6 @@ class MainWindow(QMainWindow):
         uiFilePath = os.path.join(dirname, uiRelativePath)
         uifile = QtCore.QFile(uiFilePath)
         uifile.open(QtCore.QFile.ReadOnly)
-        print(uiFilePath)
         self.ui = loader.load(uifile)
         self.centralLayout = QVBoxLayout(self)
         self.centralLayout.setContentsMargins(0, 0, 0, 0)
