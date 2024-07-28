@@ -51,7 +51,7 @@ class ProjectHandler:
         """
         shot_numbers = []
         for folder in os.scandir(os.path.join(self.path, "40_shots")):
-            shot_numbers.append(folder.name[:4])
+            shot_numbers.append(folder.name[:5])
         return shot_numbers
 
     def get_all_shots(self) -> list:
@@ -61,8 +61,8 @@ class ProjectHandler:
         shots = []
         for folder in os.scandir(os.path.join(self.path, "40_shots")):
             if folder.is_dir():
-                shot_number = folder.name[:4]
-                shot_name = folder.name[5:]
+                shot_number = folder.name[1:5]
+                shot_name = folder.name[6:]
                 shots.append(Shot(shot_name, shot_number))
         return shots
 

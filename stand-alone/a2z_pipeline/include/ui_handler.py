@@ -23,13 +23,13 @@ class AddShotDialog(QDialog):
         self.ui.pb_cancel.clicked.connect(self.rejected_button_event)
 
     def accepted_button_event(self) -> None:
-        shot_name = self.ui.le_shot_name.text()
-        if shot_name == "":
+        self.shot_name = self.ui.le_shot_name.text()
+        if self.shot_name == "":
             print("Please enter a Shot Name")
             return
         
-        shot_number = self.ui.sb_shot_number.text().zfill(4)
-        if shot_number in self.shots:
+        self.shot_number = "s" + self.ui.sb_shot_number.text().zfill(4)
+        if self.shot_number in self.shots:
             print("Shot number already exists")
             return 
 
@@ -97,9 +97,7 @@ class MainWindow(QMainWindow):
         if not shot_dialog.status:
             return None
 
-        shot_name = shot_dialog.ui.le_shot_name.text()
-        shot_number = shot_dialog.ui.sb_shot_number.text().zfill(4)
-        return {"shot_name": shot_name, "shot_number": shot_number}
+        return {"shot_name": shot_dialog.shot_name, "shot_number": shot_dialog.shot_number}
 
     def add_shot(self) -> None:
         if not self.current_project:
