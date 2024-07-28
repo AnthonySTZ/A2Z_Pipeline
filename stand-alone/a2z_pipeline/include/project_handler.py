@@ -1,6 +1,14 @@
 import os
 
 
+class Shot:
+    def __init__(self, name: str, shot_number: str) -> None:
+        self.name = name
+        self.number = shot_number
+        self.thumbnail = "I'm a thumbnail"
+        self.description = "I'm a comment"
+
+
 class ProjectHandler:
     def __init__(self, project_path: str) -> None:
         self.path = project_path.replace("\\", "/")
@@ -36,3 +44,34 @@ class ProjectHandler:
             for subfolder in secondary_folders[main_folder]:
                 subfolder_path = os.path.join(folder_path, subfolder)
                 os.makedirs(subfolder_path, exist_ok=True)
+
+    def get_all_shots_number(self):
+        """
+        Get all the shot numbers in the project.
+        """
+        shot_numbers = []
+        for folder in os.scandir(os.path.join(self.path, "40_shots")):
+            shot_numbers.append(folder.name[:4])
+        return shot_numbers
+
+    def get_all_shots(self) -> list:
+        """
+        Get all the Shot objects in the project.
+        """
+        shots = []
+        for folder in os.scandir(os.path.join(self.path, "40_shots")):
+            if folder.is_dir():
+                shot_number = folder.name[:4]
+                shot_name = folder.name[5:]
+                shots.append(Shot(shot_name, shot_number))
+        return shots
+
+    def add_shot(self, name: str, number: str):
+        """
+        Add a new shot to the project.
+        """
+        shot_folder = os.path.join(self.path, "40_shots", f"{number}_{name}")
+        os.makedirs(shot_folder, exist_ok=True)
+
+    def __str__(self):
+        return f"ProjectHandler(name='{self.name}')"
