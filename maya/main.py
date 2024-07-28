@@ -1,12 +1,7 @@
 from include.project_handler import ProjectHandler
 from include.ui_handler import MainWindow
-import maya.cmds as cmds
-import os
 from maya import OpenMayaUI as omui
 from shiboken2 import wrapInstance
-from PySide2 import QtUiTools, QtCore
-from PySide2.QtGui import QPixmap
-from PySide2.QtCore import Qt
 from PySide2.QtWidgets import QApplication, QWidget
 
 
