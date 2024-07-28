@@ -6,8 +6,10 @@ sys.path.insert(0, PLUGIN_PATH)
 
 from importlib import reload
 import main
-import include.project_handler
+import include.project_handler as project_handler
+import include.ui_handler as ui_handler
 
-reload(include.project_handler)
+reload(project_handler)
+reload(ui_handler)
 reload(main)
-main.start_program()
+main.openWindow()
