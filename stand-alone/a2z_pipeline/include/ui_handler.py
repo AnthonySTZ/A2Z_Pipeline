@@ -1,9 +1,9 @@
-from PySide6.QtWidgets import QMainWindow, QInputDialog, QDialog, QTableWidgetItem
+from PySide6.QtWidgets import QMainWindow, QInputDialog, QDialog, QTableWidgetItem, QHeaderView, QCheckBox, QWidget, QHBoxLayout
 from PySide6 import QtUiTools, QtCore
 from include.interface.main_window import Ui_MainWindow as UiMainWindow
 from include.interface.add_shot_dialog import Ui_Dialog as UiAddShotDialog
 import os
-from include.project_handler import ProjectHandler
+from include.project_handler import ProjectHandler, Shot
 
 PROJECTS_PATH = "A:/Programming/A2Z_Pipeline/test"
 
@@ -52,10 +52,22 @@ class MainWindow(QMainWindow):
         self.show()
 
     def init_ui(self) -> None:
+        self.init_shots_table_ui()
         self.update_projects_list()
         self.ui.cb_projects.currentIndexChanged.connect(self.update_project)
         self.ui.pb_add_projects.clicked.connect(self.add_project)
         self.ui.pb_add_shot.clicked.connect(self.add_shot)
+
+    def init_shots_table_ui(self) -> None:
+        self.ui.tw_shots.resizeColumnToContents(0)
+        self.ui.tw_shots.resizeColumnToContents(1)
+        self.ui.tw_shots.resizeColumnToContents(2)
+        self.ui.tw_shots.resizeColumnToContents(3)
+        self.ui.tw_shots.resizeColumnToContents(4)
+        self.ui.tw_shots.resizeColumnToContents(5)
+        self.ui.tw_shots.resizeColumnToContents(6)
+        self.ui.tw_shots.resizeColumnToContents(7)
+        self.ui.tw_shots.horizontalHeader().setSectionResizeMode(8, QHeaderView.Stretch)
 
     def update_projects_list(self):
         if not os.path.exists(PROJECTS_PATH):
@@ -114,6 +126,26 @@ class MainWindow(QMainWindow):
         )
         self.update_shots_table()
 
+    def create_tableWidgetItem(self, value:str)-> QTableWidgetItem:
+        item = QTableWidgetItem(value)
+        item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        return item
+
+    def create_tableWidgetCheckboxItem(self, shot:Shot, department:str)-> QWidget:
+        checkbox_widget = QWidget()
+        checkbox = QCheckBox()
+        checkbox.setChecked(bool(shot.departments[department]))
+        checkbox.stateChanged.connect(lambda state, shot=shot, department=department: self.toggle_department_shot_state(state, shot, department))
+        layout = QHBoxLayout(checkbox_widget)
+        layout.addWidget(checkbox)
+        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        layout.setContentsMargins(0, 0, 0, 0)
+        return checkbox_widget
+
+    def toggle_department_shot_state(self, state:bool, shot:Shot, department:str)->None:
+        shot.departments[department] = bool(state)
+        shot.save()
+
     def update_shots_table(self) -> None:
         if not self.current_project:
             return
@@ -123,8 +155,16 @@ class MainWindow(QMainWindow):
         for shot in shots:
             rowPosition = self.ui.tw_shots.rowCount()
             self.ui.tw_shots.insertRow(rowPosition)
-            self.ui.tw_shots.setItem(rowPosition, 0, QTableWidgetItem(shot.number))
-            self.ui.tw_shots.setItem(rowPosition, 1, QTableWidgetItem(shot.name))
-            self.ui.tw_shots.setItem(rowPosition, 2, QTableWidgetItem(shot.thumbnail))
-            self.ui.tw_shots.setItem(rowPosition, 3, QTableWidgetItem(shot.description))
+            number_item = self.create_tableWidgetItem(shot.number)
+            name_item = self.create_tableWidgetItem(shot.name)
+            thumbnail_item = self.create_tableWidgetItem(shot.thumbnail)
+            description_item = self.create_tableWidgetItem(shot.description)
+            self.ui.tw_shots.setItem(rowPosition, 0, number_item)
+            self.ui.tw_shots.setItem(rowPosition, 1, name_item)
+            self.ui.tw_shots.setItem(rowPosition, 2, thumbnail_item)
+            for i, department in enumerate(shot.departments):
+                checkbox_widget = self.create_tableWidgetCheckboxItem(shot, department)
+                self.ui.tw_shots.setCellWidget(rowPosition, i+3, checkbox_widget)
+            self.ui.tw_shots.setItem(rowPosition, 8, description_item)
         
+        self.init_shots_table_ui()

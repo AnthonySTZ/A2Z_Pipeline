@@ -1,12 +1,49 @@
 import os
+import json
 
 
 class Shot:
-    def __init__(self, name: str, shot_number: str) -> None:
+
+    def __init__(self, path: str, name: str, shot_number: str) -> None:
+        self.path = path
         self.name = name
         self.number = shot_number
         self.thumbnail = "I'm a thumbnail"
         self.description = "I'm a comment"
+        self.departments = {
+            "preprod": False,
+            "asset": False,
+            "fx": False,
+            "lighting": False,
+            "comp": False,
+        }
+        self.infos_path = os.path.join(self.path, "infos.json")
+        self.init_departments_state()
+
+    def init_departments_state(self) -> None:
+        if not os.path.exists(self.infos_path):
+            self.save()
+            return
+
+        with open(self.infos_path, "r") as f:
+            data = json.load(f)
+            self.departments = data["departments"]
+
+    def save(self) -> None:
+        """
+        Save the shot data to a JSON file.
+        """
+        shot_data = {
+            "name": self.name,
+            "number": self.number,
+            "thumbnail": self.thumbnail,
+            "description": self.description,
+            "departments": self.departments,
+        }
+        contents = json.dumps(shot_data)
+        f = open(self.infos_path, "w")
+        f.write(contents)
+        f.close()
 
 
 class ProjectHandler:
@@ -63,7 +100,9 @@ class ProjectHandler:
             if folder.is_dir():
                 shot_number = folder.name[1:5]
                 shot_name = folder.name[6:]
-                shots.append(Shot(shot_name, shot_number))
+                shots.append(
+                    Shot(os.path.join(self.path, folder), shot_name, shot_number)
+                )
         return shots
 
     def add_shot(self, name: str, number: str):
@@ -72,6 +111,9 @@ class ProjectHandler:
         """
         shot_folder = os.path.join(self.path, "40_shots", f"{number}_{name}")
         os.makedirs(shot_folder, exist_ok=True)
+        # Create Shot json
+        shot = Shot(shot_folder, name, number[1:])
+        shot.save()
 
     def __str__(self):
         return f"ProjectHandler(name='{self.name}')"

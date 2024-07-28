@@ -118,6 +118,9 @@
          <property name="sortingEnabled">
           <bool>false</bool>
          </property>
+         <attribute name="horizontalHeaderDefaultSectionSize">
+          <number>60</number>
+         </attribute>
          <attribute name="horizontalHeaderStretchLastSection">
           <bool>true</bool>
          </attribute>
@@ -137,6 +140,31 @@
          <column>
           <property name="text">
            <string>Thumbnails</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>preprod</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>asset</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>fx</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>lighting</string>
+          </property>
+         </column>
+         <column>
+          <property name="text">
+           <string>comp</string>
           </property>
          </column>
          <column>

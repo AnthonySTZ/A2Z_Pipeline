@@ -76,8 +76,8 @@ class Ui_MainWindow(object):
         self.gridLayout.addItem(self.horizontalSpacer_2, 0, 1, 1, 1)
 
         self.tw_shots = QTableWidget(self.widget_2)
-        if (self.tw_shots.columnCount() < 4):
-            self.tw_shots.setColumnCount(4)
+        if (self.tw_shots.columnCount() < 9):
+            self.tw_shots.setColumnCount(9)
         __qtablewidgetitem = QTableWidgetItem()
         self.tw_shots.setHorizontalHeaderItem(0, __qtablewidgetitem)
         __qtablewidgetitem1 = QTableWidgetItem()
@@ -86,11 +86,22 @@ class Ui_MainWindow(object):
         self.tw_shots.setHorizontalHeaderItem(2, __qtablewidgetitem2)
         __qtablewidgetitem3 = QTableWidgetItem()
         self.tw_shots.setHorizontalHeaderItem(3, __qtablewidgetitem3)
+        __qtablewidgetitem4 = QTableWidgetItem()
+        self.tw_shots.setHorizontalHeaderItem(4, __qtablewidgetitem4)
+        __qtablewidgetitem5 = QTableWidgetItem()
+        self.tw_shots.setHorizontalHeaderItem(5, __qtablewidgetitem5)
+        __qtablewidgetitem6 = QTableWidgetItem()
+        self.tw_shots.setHorizontalHeaderItem(6, __qtablewidgetitem6)
+        __qtablewidgetitem7 = QTableWidgetItem()
+        self.tw_shots.setHorizontalHeaderItem(7, __qtablewidgetitem7)
+        __qtablewidgetitem8 = QTableWidgetItem()
+        self.tw_shots.setHorizontalHeaderItem(8, __qtablewidgetitem8)
         self.tw_shots.setObjectName(u"tw_shots")
         self.tw_shots.setSelectionMode(QAbstractItemView.NoSelection)
         self.tw_shots.setVerticalScrollMode(QAbstractItemView.ScrollPerPixel)
         self.tw_shots.setHorizontalScrollMode(QAbstractItemView.ScrollPerItem)
         self.tw_shots.setSortingEnabled(False)
+        self.tw_shots.horizontalHeader().setDefaultSectionSize(60)
         self.tw_shots.horizontalHeader().setStretchLastSection(True)
         self.tw_shots.verticalHeader().setVisible(False)
 
@@ -118,6 +129,16 @@ class Ui_MainWindow(object):
         ___qtablewidgetitem2 = self.tw_shots.horizontalHeaderItem(2)
         ___qtablewidgetitem2.setText(QCoreApplication.translate("MainWindow", u"Thumbnails", None));
         ___qtablewidgetitem3 = self.tw_shots.horizontalHeaderItem(3)
-        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"Description", None));
+        ___qtablewidgetitem3.setText(QCoreApplication.translate("MainWindow", u"preprod", None));
+        ___qtablewidgetitem4 = self.tw_shots.horizontalHeaderItem(4)
+        ___qtablewidgetitem4.setText(QCoreApplication.translate("MainWindow", u"asset", None));
+        ___qtablewidgetitem5 = self.tw_shots.horizontalHeaderItem(5)
+        ___qtablewidgetitem5.setText(QCoreApplication.translate("MainWindow", u"fx", None));
+        ___qtablewidgetitem6 = self.tw_shots.horizontalHeaderItem(6)
+        ___qtablewidgetitem6.setText(QCoreApplication.translate("MainWindow", u"lighting", None));
+        ___qtablewidgetitem7 = self.tw_shots.horizontalHeaderItem(7)
+        ___qtablewidgetitem7.setText(QCoreApplication.translate("MainWindow", u"comp", None));
+        ___qtablewidgetitem8 = self.tw_shots.horizontalHeaderItem(8)
+        ___qtablewidgetitem8.setText(QCoreApplication.translate("MainWindow", u"Description", None));
     # retranslateUi
 
