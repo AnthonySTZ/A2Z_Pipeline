@@ -7,7 +7,7 @@ import maya.cmds as cmds
 PROJECT_PATH = "A:/Programming/A2Z_Pipeline/test"
 
 
-class MainWindow(QDialog):
+class SaveAs(QDialog):
     def __init__(self, parent=QApplication.activeWindow()):
         super().__init__(parent)
 
@@ -149,7 +149,7 @@ class MainWindow(QDialog):
         cmds.file(save=True)
         self.close()
 
-    def overwrite_scene(self) -> None:
+    def overwrite_scene(self) -> bool:
         """Ask the user if they want to overwrite an existing scene"""
         reply = QMessageBox.question(
             self,
@@ -159,3 +159,79 @@ class MainWindow(QDialog):
             QMessageBox.No,
         )
         return reply == QMessageBox.Yes
+
+
+class Save(QDialog):
+    def __init__(self, parent=QApplication.activeWindow()):
+        super().__init__(parent)
+        self.init_maya_ui("interface\\save.ui")
+        self.scene_version = None
+
+    def show_window(self) -> None:
+        self.resize(798, 132)
+        self.init_ui()
+        self.show()
+
+    def init_ui(self) -> None:
+        self.update_name_and_path()
+        self.ui.pb_save.clicked.connect(self.save_scene)
+        self.ui.pb_add_version.clicked.connect(lambda x: self.add_version(1))
+        self.ui.pb_sub_version.clicked.connect(lambda x: self.add_version(-1))
+
+    def update_name_and_path(self) -> None:
+        """Update save name label with the current scene name"""
+        scene_name = cmds.file(query=True, sceneName=True)
+        if scene_name is None:
+            print("No current scene")
+            return
+        if self.scene_version is None:
+            scene_version = int(scene_name[-6:-3])
+            self.scene_version = scene_version
+        scene_path = scene_name[:-6] + str(self.scene_version + 1).zfill(3) + ".mb"
+        scene_name = scene_path[-scene_path[::-1].find("/") :]
+        self.scene_name = scene_name
+        self.ui.l_name.setText(scene_name)
+        self.ui.l_path.setText(scene_path)
+
+    def add_version(self, num: int) -> None:
+        if self.scene_version + num >= 0:
+            self.scene_version += num
+        self.update_name_and_path()
+
+    def save_scene(self) -> None:
+        """Save the current scene to the specified path"""
+        scene_path = self.ui.l_path.text()
+        if scene_path == "":
+            print("Invalid scene path")
+            return
+
+        if os.path.exists(scene_path):
+            print(f"Scene already exists at {scene_path}")
+            if not self.overwrite_scene():
+                return
+
+        cmds.file(rename=scene_path)
+        cmds.file(save=True)
+        self.close()
+
+    def overwrite_scene(self) -> bool:
+        """Ask the user if they want to overwrite an existing scene"""
+        reply = QMessageBox.question(
+            self,
+            "Confirm overwrite",
+            f"A scene named '{os.path.basename(self.scene_name)}' already exists. Do you want to overwrite it?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        return reply == QMessageBox.Yes
+
+    def init_maya_ui(self, uiRelativePath) -> None:
+        loader = QtUiTools.QUiLoader()
+        dirname = os.path.dirname(__file__)
+        uiFilePath = os.path.join(dirname, uiRelativePath)
+        uifile = QtCore.QFile(uiFilePath)
+        uifile.open(QtCore.QFile.ReadOnly)
+        self.ui = loader.load(uifile)
+        self.centralLayout = QVBoxLayout(self)
+        self.centralLayout.setContentsMargins(0, 0, 0, 0)
+        self.centralLayout.addWidget(self.ui)
