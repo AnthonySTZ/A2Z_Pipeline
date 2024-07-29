@@ -2,6 +2,7 @@ import os
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QApplication
 from PySide2 import QtCore, QtUiTools
 from include.project_handler import ProjectHandler
+import maya.cmds as cmds
 
 PROJECT_PATH = "A:/Programming/A2Z_Pipeline/test"
 
@@ -27,6 +28,7 @@ class MainWindow(QDialog):
         self.ui.cb_project.currentIndexChanged.connect(self.selected_project_changed)
         self.ui.cb_type.currentIndexChanged.connect(self.update_kind_list)
         self.ui.cb_kind.currentIndexChanged.connect(self.update_path)
+        self.ui.pb_save.clicked.connect(self.save_as)
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
@@ -119,3 +121,25 @@ class MainWindow(QDialog):
             + "_v001.mb"
         )
         self.ui.l_path.setText(self.scene_name)
+
+    def save_as(self) -> None:
+        """Save the current scene to the specified path"""
+        if self.project is None or self.scene_name == "":
+            print("Invalid project or scene name")
+            return
+
+        # Print the save message and the full path to the saved scene
+        #
+        scene_path = os.path.join(
+            self.projects_path, self.project.name, self.scene_name
+        ).replace("\\", "/")
+        # TODO: Implement saving scene to Maya scene file
+        print(f"Saving scene to {scene_path}")
+        if not os.path.exists(os.path.join(self.projects_path, self.project.name)):
+            print("Folder does not exist")
+            return
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")]
+        os.makedirs(scene_folders_path, exist_ok=True)  # Create missing folders
+        cmds.file(rename=scene_path)
+        cmds.file(save=True)
+        self.close()
