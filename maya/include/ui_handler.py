@@ -1,5 +1,5 @@
 import os
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QApplication
+from PySide2.QtWidgets import QDialog, QVBoxLayout, QApplication, QMessageBox
 from PySide2 import QtCore, QtUiTools
 from include.project_handler import ProjectHandler
 import maya.cmds as cmds
@@ -133,13 +133,29 @@ class MainWindow(QDialog):
         scene_path = os.path.join(
             self.projects_path, self.project.name, self.scene_name
         ).replace("\\", "/")
-        # TODO: Implement saving scene to Maya scene file
-        print(f"Saving scene to {scene_path}")
+
         if not os.path.exists(os.path.join(self.projects_path, self.project.name)):
             print("Folder does not exist")
             return
+
+        if os.path.exists(scene_path):
+            print(f"Scene already exists at {scene_path}")
+            if not self.overwrite_scene():
+                return
+        print(f"Saving scene to {scene_path}")
         scene_folders_path = scene_path[: -scene_path[::-1].find("/")]
         os.makedirs(scene_folders_path, exist_ok=True)  # Create missing folders
         cmds.file(rename=scene_path)
         cmds.file(save=True)
         self.close()
+
+    def overwrite_scene(self) -> None:
+        """Ask the user if they want to overwrite an existing scene"""
+        reply = QMessageBox.question(
+            self,
+            "Confirm overwrite",
+            f"A scene named '{os.path.basename(self.scene_name)}' already exists. Do you want to overwrite it?",
+            QMessageBox.Yes | QMessageBox.No,
+            QMessageBox.No,
+        )
+        return reply == QMessageBox.Yes
