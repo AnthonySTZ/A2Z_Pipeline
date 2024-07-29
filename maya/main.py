@@ -1,15 +1,7 @@
-from include.project_handler import ProjectHandler
 from include.ui_handler import MainWindow
 from maya import OpenMayaUI as omui
 from shiboken2 import wrapInstance
 from PySide2.QtWidgets import QApplication, QWidget
-
-
-def start_program():
-
-    project_path = "A:/Programming/A2Z_Pipeline/a2z_pipeline/test/TestProject"
-    project = ProjectHandler(project_path)
-    print(project.name)
 
 
 def openWindow():
