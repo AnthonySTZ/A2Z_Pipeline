@@ -96,9 +96,26 @@ class MainWindow(QDialog):
     def update_path(self) -> None:
         """Update save path label with the selected project, shot, and kind"""
         selected_shot = self.ui.cb_shot.currentText()
+        selected_type = self.ui.cb_type.currentText()
         selected_kind = self.ui.cb_kind.currentText()
         if self.project is None or selected_shot == "" or selected_kind == "":
             self.ui.l_path.setText("")
             return
-        self.scene_name = selected_shot + "_" + selected_kind + "_v001.mb"
+        type_folder = {
+            "ASSETS": "30_assets",
+            "SHOTS": "40_shots",
+            "RND": "10_preprod/rnd",
+        }
+        self.scene_name = (
+            type_folder[selected_type]
+            + "/"
+            + selected_shot
+            + "/"
+            + selected_kind
+            + "/"
+            + selected_shot
+            + "_"
+            + selected_kind
+            + "_v001.mb"
+        )
         self.ui.l_path.setText(self.scene_name)
