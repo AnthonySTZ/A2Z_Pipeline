@@ -9,7 +9,7 @@ class Shot:
         self.name = name
         self.number = shot_number
         self.thumbnail = "I'm a thumbnail"
-        self.description = "I'm a comment"
+        self.description = ""
         self.departments = {
             "preprod": False,
             "asset": False,
@@ -19,6 +19,19 @@ class Shot:
         }
         self.infos_path = os.path.join(self.path, "infos.json")
         self.init_departments_state()
+        self.init_comment()
+
+    def init_comment(self):
+        """
+        Initialize the comment for the shot.
+        """
+        if not os.path.exists(self.infos_path):
+            self.save()
+            return
+
+        with open(self.infos_path, "r") as f:
+            data = json.load(f)
+            self.description = data["description"]
 
     def init_departments_state(self) -> None:
         if not os.path.exists(self.infos_path):
@@ -81,6 +94,16 @@ class ProjectHandler:
             for subfolder in secondary_folders[main_folder]:
                 subfolder_path = os.path.join(folder_path, subfolder)
                 os.makedirs(subfolder_path, exist_ok=True)
+
+    def get_shot_by_number(self, number: str):
+        """
+        Get the Shot object by its number.
+        """
+        for folder in os.scandir(os.path.join(self.path, "40_shots")):
+            if folder.is_dir() and folder.name[1:5] == number:
+                shot_name = folder.name[6:]
+                return Shot(os.path.join(self.path, folder), shot_name, number)
+        return None
 
     def get_all_shots_number(self):
         """

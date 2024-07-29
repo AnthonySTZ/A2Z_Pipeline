@@ -48,12 +48,12 @@ class MainWindow(QMainWindow):
 
         self.init_ui()
         self.update_project()
-        self.update_shots_table()
         self.show()
 
     def init_ui(self) -> None:
         self.init_shots_table_ui()
         self.update_projects_list()
+        self.ui.tw_shots.itemChanged.connect(self.shot_item_changed)
         self.ui.cb_projects.currentIndexChanged.connect(self.update_project)
         self.ui.pb_add_projects.clicked.connect(self.add_project)
         self.ui.pb_add_shot.clicked.connect(self.add_shot)
@@ -126,9 +126,11 @@ class MainWindow(QMainWindow):
         )
         self.update_shots_table()
 
-    def create_tableWidgetItem(self, value:str)-> QTableWidgetItem:
+    def create_tableWidgetItem(self, value:str, read_only:bool = True)-> QTableWidgetItem:
         item = QTableWidgetItem(value)
         item.setTextAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
+        if read_only:
+            item.setFlags(QtCore.Qt.ItemFlag.ItemIsEnabled)
         return item
 
     def create_tableWidgetCheckboxItem(self, shot:Shot, department:str)-> QWidget:
@@ -146,6 +148,21 @@ class MainWindow(QMainWindow):
         shot.departments[department] = bool(state)
         shot.save()
 
+    def create_shot_row(self, shot:Shot)->None:
+        rowPosition = self.ui.tw_shots.rowCount()
+        self.ui.tw_shots.insertRow(rowPosition)
+        number_item = self.create_tableWidgetItem(shot.number)
+        name_item = self.create_tableWidgetItem(shot.name)
+        thumbnail_item = self.create_tableWidgetItem(shot.thumbnail)
+        description_item = self.create_tableWidgetItem(shot.description, read_only=False)
+        self.ui.tw_shots.setItem(rowPosition, 0, number_item)
+        self.ui.tw_shots.setItem(rowPosition, 1, name_item)
+        self.ui.tw_shots.setItem(rowPosition, 2, thumbnail_item)
+        for i, department in enumerate(shot.departments):
+            checkbox_widget = self.create_tableWidgetCheckboxItem(shot, department)
+            self.ui.tw_shots.setCellWidget(rowPosition, i+3, checkbox_widget)
+        self.ui.tw_shots.setItem(rowPosition, 8, description_item)
+
     def update_shots_table(self) -> None:
         if not self.current_project:
             return
@@ -153,18 +170,14 @@ class MainWindow(QMainWindow):
         shots = self.current_project.get_all_shots()
         self.ui.tw_shots.setRowCount(0) # Clear the table
         for shot in shots:
-            rowPosition = self.ui.tw_shots.rowCount()
-            self.ui.tw_shots.insertRow(rowPosition)
-            number_item = self.create_tableWidgetItem(shot.number)
-            name_item = self.create_tableWidgetItem(shot.name)
-            thumbnail_item = self.create_tableWidgetItem(shot.thumbnail)
-            description_item = self.create_tableWidgetItem(shot.description)
-            self.ui.tw_shots.setItem(rowPosition, 0, number_item)
-            self.ui.tw_shots.setItem(rowPosition, 1, name_item)
-            self.ui.tw_shots.setItem(rowPosition, 2, thumbnail_item)
-            for i, department in enumerate(shot.departments):
-                checkbox_widget = self.create_tableWidgetCheckboxItem(shot, department)
-                self.ui.tw_shots.setCellWidget(rowPosition, i+3, checkbox_widget)
-            self.ui.tw_shots.setItem(rowPosition, 8, description_item)
+            self.create_shot_row(shot)
         
         self.init_shots_table_ui()
+
+    def shot_item_changed(self, item:QTableWidgetItem)->None:
+        if item.column() == 8:
+            shot_number = item.tableWidget().item(item.row(), 0).text()
+            new_description = item.text()
+            shot = self.current_project.get_shot_by_number(shot_number)
+            shot.description = new_description
+            shot.save()
