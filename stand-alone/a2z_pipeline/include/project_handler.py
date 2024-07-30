@@ -120,7 +120,7 @@ class ProjectHandler:
         """
         shots = []
         for folder in os.scandir(os.path.join(self.path, "40_shots")):
-            if folder.is_dir():
+            if folder.is_dir() and folder.name != "thumbnails":
                 shot_number = folder.name[1:5]
                 shot_name = folder.name[6:]
                 shots.append(

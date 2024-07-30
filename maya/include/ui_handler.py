@@ -181,7 +181,7 @@ class SaveAs(QDialog):
         scene_path = os.path.join(
             self.projects_path, self.project.name, self.scene_name
         ).replace("\\", "/")[:-3]
-        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "thumnails/"
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "thumbnails/"
         os.makedirs(scene_folders_path, exist_ok=True)
         scene_name = scene_path[-scene_path[::-1].find("/") :]
         path = scene_folders_path + scene_name + ".jpg"
@@ -301,7 +301,7 @@ class Save(QDialog):
 
     def create_thumbnail_path(self) -> str:
         scene_path = self.ui.l_path.text().replace("\\", "/")[:-3]
-        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "thumnails/"
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "thumbnails/"
         os.makedirs(scene_folders_path, exist_ok=True)
         scene_name = scene_path[-scene_path[::-1].find("/") :]
         path = scene_folders_path + scene_name + ".jpg"
@@ -455,7 +455,8 @@ class Open(QDialog):
             return
         files = [f.name for f in os.scandir(self.scenes_path)][::-1]
         for file in files:
-            self.ui.cb_scene.addItem(file)
+            if file != "thumbnails":
+                self.ui.cb_scene.addItem(file)
 
     def get_scene_path(self) -> str:
         selected_scene = self.ui.cb_scene.currentText()
@@ -468,6 +469,7 @@ class Open(QDialog):
         selected_scene = self.get_scene_path()
         self.ui.l_path.setText(selected_scene)
         self.update_scene_infos()
+        self.update_thumbnail()
 
     def update_scene_infos(self) -> None:
         selected_scene = self.get_scene_path()
@@ -498,6 +500,26 @@ class Open(QDialog):
             return
         cmds.file(selected_scene, reference=True, force=True)
         self.close()
+
+    def update_thumbnail(self) -> None:
+        path = self.create_thumbnail_path()
+        self.set_thumbnails_image(path)
+
+    def create_thumbnail_path(self) -> str:
+        scene_path = self.ui.l_path.text().replace("\\", "/")[:-3]
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "thumbnails/"
+        os.makedirs(scene_folders_path, exist_ok=True)
+        scene_name = scene_path[-scene_path[::-1].find("/") :]
+        path = scene_folders_path + scene_name + ".jpg"
+        return path
+
+    def set_thumbnails_image(self, imagePath):
+        if not os.path.exists(imagePath):
+            self.ui.l_thumbnail.setPixmap(QPixmap())
+            return
+        pixmap = QPixmap(imagePath).scaledToHeight(90)
+        self.ui.l_thumbnail.setPixmap(pixmap)
+        self.ui.l_thumbnail.setText("")
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
