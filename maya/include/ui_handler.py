@@ -1,5 +1,11 @@
 import os
-from PySide2.QtWidgets import QDialog, QVBoxLayout, QApplication, QMessageBox
+from PySide2.QtWidgets import (
+    QDialog,
+    QVBoxLayout,
+    QApplication,
+    QMessageBox,
+    QFileDialog,
+)
 from PySide2 import QtCore, QtUiTools
 from PySide2.QtGui import QPixmap
 from include.project_handler import ProjectHandler
@@ -34,6 +40,7 @@ class SaveAs(QDialog):
         self.ui.cb_kind.currentIndexChanged.connect(self.update_path)
         self.ui.pb_save.clicked.connect(self.save_as)
         self.ui.pb_screenshot.clicked.connect(self.take_screenshot)
+        self.ui.pb_browse.clicked.connect(self.browse_thumbnail)
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
@@ -211,6 +218,18 @@ class SaveAs(QDialog):
 
         return path
 
+    def browse_thumbnail(self) -> None:
+        file_dialog = QFileDialog()
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        file_dialog.setWindowTitle("Select Thumbnail")
+        file_dialog.setNameFilter(("Images (*.png *.xpm *.jpg)"))
+        if file_dialog.exec_():
+            if file_dialog.selectedFiles():
+                file_path = file_dialog.selectedFiles()[0]
+                self.thumbnail_path = self.create_tmp_path() + "thumbnail_tmp.jpg"
+                shutil.copy2(file_path, self.thumbnail_path)
+                self.set_thumbnails_image(self.thumbnail_path)
+
     def set_thumbnails_image(self, imagePath):
 
         pixmap = QPixmap(imagePath).scaledToHeight(90)
@@ -236,6 +255,7 @@ class Save(QDialog):
         self.ui.pb_add_version.clicked.connect(lambda x: self.add_version(1))
         self.ui.pb_sub_version.clicked.connect(lambda x: self.add_version(-1))
         self.ui.pb_screenshot.clicked.connect(self.take_screenshot)
+        self.ui.pb_browse.clicked.connect(self.browse_thumbnail)
 
     def update_name_and_path(self) -> None:
         """Update save name label with the current scene name"""
@@ -335,6 +355,18 @@ class Save(QDialog):
         pixmap = QPixmap(imagePath).scaledToHeight(90)
         self.ui.l_thumbnail.setPixmap(pixmap)
         self.ui.l_thumbnail.setText("")
+
+    def browse_thumbnail(self) -> None:
+        file_dialog = QFileDialog()
+        file_dialog.setFileMode(QFileDialog.ExistingFile)
+        file_dialog.setWindowTitle("Select Thumbnail")
+        file_dialog.setNameFilter(("Images (*.png *.xpm *.jpg)"))
+        if file_dialog.exec_():
+            if file_dialog.selectedFiles():
+                file_path = file_dialog.selectedFiles()[0]
+                self.thumbnail_path = self.create_tmp_path() + "thumbnail_tmp.jpg"
+                shutil.copy2(file_path, self.thumbnail_path)
+        self.update_thumbnail()
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
