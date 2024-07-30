@@ -101,7 +101,7 @@ class SaveAs(QDialog):
         kinds = {
             "ASSETS": ["MODEL", "RIGGING" "GROOM", "ANIM", "SHADING", "MUSCLE"],
             "SHOTS": ["ANIM", "FX", "LIGHT", "RENDER"],
-            "RND": ["MODEL", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
+            "RND": ["MODEL", "RIGGING", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
         }
         type = self.ui.cb_type.currentText()
         for kind in kinds[type]:
@@ -465,7 +465,7 @@ class Open(QDialog):
         kinds = {
             "ASSETS": ["MODEL", "RIGGING", "GROOM", "ANIM", "SHADING", "MUSCLE"],
             "SHOTS": ["ANIM", "FX", "LIGHT", "RENDER"],
-            "RND": ["MODEL", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
+            "RND": ["MODEL", "RIGGING", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
         }
         type = self.ui.cb_type.currentText()
         for kind in kinds[type]:
