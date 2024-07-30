@@ -128,6 +128,7 @@ class SaveAs(QDialog):
             + "/"
             + selected_kind
             + "/"
+            + "WORK/"
             + selected_shot
             + "_"
             + selected_kind
@@ -493,6 +494,7 @@ class Open(QDialog):
             + selected_shot
             + "/"
             + selected_kind
+            + "/WORK"
         )
         self.ui.cb_scene.clear()
         if not os.path.exists(self.scenes_path):
@@ -506,7 +508,7 @@ class Open(QDialog):
         selected_scene = self.ui.cb_scene.currentText()
         if selected_scene == "":
             return ""
-        return os.path.join(self.scenes_path, selected_scene)
+        return os.path.join(self.scenes_path, selected_scene).replace("\\", "/")
 
     def update_path(self) -> None:
         """Update save path label with the selected scene path"""
@@ -564,6 +566,32 @@ class Open(QDialog):
         pixmap = QPixmap(imagePath).scaledToHeight(90)
         self.ui.l_thumbnail.setPixmap(pixmap)
         self.ui.l_thumbnail.setText("")
+
+    def init_maya_ui(self, uiRelativePath) -> None:
+        loader = QtUiTools.QUiLoader()
+        dirname = os.path.dirname(__file__)
+        uiFilePath = os.path.join(dirname, uiRelativePath)
+        uifile = QtCore.QFile(uiFilePath)
+        uifile.open(QtCore.QFile.ReadOnly)
+        self.ui = loader.load(uifile)
+        self.centralLayout = QVBoxLayout(self)
+        self.centralLayout.setContentsMargins(0, 0, 0, 0)
+        self.centralLayout.addWidget(self.ui)
+
+
+class ExportMesh(QDialog):
+
+    def __init__(self, parent=QApplication.activeWindow()):
+        super().__init__(parent)
+        self.init_maya_ui("interface\\export_mesh.ui")
+
+    def show_window(self) -> None:
+        self.resize(798, 132)
+        self.init_ui()
+        self.show()
+
+    def init_ui(self) -> None:
+        pass
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
