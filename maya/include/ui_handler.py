@@ -35,6 +35,7 @@ class SaveAs(QDialog):
         self.selected_project_changed()
         self.update_shots_list()
         self.update_kind_list()
+        self.remove_tmp_thumbnail()
         self.ui.cb_project.currentIndexChanged.connect(self.selected_project_changed)
         self.ui.cb_type.currentIndexChanged.connect(self.update_kind_list)
         self.ui.cb_kind.currentIndexChanged.connect(self.update_path)
@@ -230,6 +231,11 @@ class SaveAs(QDialog):
                 shutil.copy2(file_path, self.thumbnail_path)
                 self.set_thumbnails_image(self.thumbnail_path)
 
+    def remove_tmp_thumbnail(self) -> None:
+        tmp_file = self.create_tmp_path() + "thumbnail_tmp.jpg"
+        if os.path.exists(tmp_file):
+            os.remove(tmp_file)
+
     def set_thumbnails_image(self, imagePath):
 
         pixmap = QPixmap(imagePath).scaledToHeight(90)
@@ -251,6 +257,7 @@ class Save(QDialog):
     def init_ui(self) -> None:
         self.update_name_and_path()
         self.update_thumbnail()
+        self.remove_tmp_thumbnail()
         self.ui.pb_save.clicked.connect(self.save_scene)
         self.ui.pb_add_version.clicked.connect(lambda x: self.add_version(1))
         self.ui.pb_sub_version.clicked.connect(lambda x: self.add_version(-1))
@@ -367,6 +374,12 @@ class Save(QDialog):
                 self.thumbnail_path = self.create_tmp_path() + "thumbnail_tmp.jpg"
                 shutil.copy2(file_path, self.thumbnail_path)
         self.update_thumbnail()
+
+    def remove_tmp_thumbnail(self) -> None:
+        tmp_file = self.create_tmp_path() + "thumbnail_tmp.jpg"
+        if os.path.exists(tmp_file):
+            os.remove(tmp_file)
+            self.update_thumbnail()
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()

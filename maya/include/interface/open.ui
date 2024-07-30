@@ -122,6 +122,9 @@
             <height>130</height>
            </size>
           </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
           <layout class="QGridLayout" name="gridLayout">
            <item row="0" column="0">
             <widget class="QLabel" name="l_thumbnail">
@@ -141,6 +144,13 @@
               <font>
                <pointsize>12</pointsize>
               </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">.QLabel {
+
+	border: 1px solid rgb(153, 153, 153);
+
+}</string>
              </property>
              <property name="text">
               <string>Thumbnail</string>
