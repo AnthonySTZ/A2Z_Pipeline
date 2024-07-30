@@ -16,9 +16,9 @@ def create_window(dialog: QDialog):
     mayaMainWindow = wrapInstance(int(mayaMainWindowPtr), QWidget)
     dialog.window = dialog(parent=mayaMainWindow)
     dialog.window.setObjectName(
-        "SaveAs"
+        str(dialog.__name__)
     )  # code above uses this to ID any existing windows
-    dialog.window.setWindowTitle("A2Z SaveAs")
+    dialog.window.setWindowTitle("A2Z " + str(dialog.__name__))
     dialog.window.show_window()
 
 
