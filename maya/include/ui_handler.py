@@ -25,6 +25,7 @@ class SaveAs(QDialog):
         self.init_maya_ui("interface\\save_as.ui")
         self.projects_path = PROJECT_PATH
         self.project = None
+        self.thumbnail_path = None
 
     def show_window(self) -> None:
         self.resize(798, 161)
@@ -99,7 +100,7 @@ class SaveAs(QDialog):
         """Populate kind list combo box with available kinds"""
         self.ui.cb_kind.clear()
         kinds = {
-            "ASSETS": ["MODEL", "RIGGING" "GROOM", "ANIM", "SHADING", "MUSCLE"],
+            "ASSETS": ["MODEL", "RIGGING", "GROOM", "ANIM", "SHADING", "MUSCLE"],
             "SHOTS": ["ANIM", "FX", "LIGHT", "RENDER"],
             "RND": ["MODEL", "RIGGING", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
         }
@@ -137,6 +138,15 @@ class SaveAs(QDialog):
         )
         self.ui.l_path.setText(self.scene_name)
 
+    def publish(self, scene_path):
+        self.scene_name = self.scene_name.replace("WORK/", "PUBLISH/")
+        copy_scene_path = os.path.join(
+            self.projects_path, self.project.name, self.scene_name
+        ).replace("\\", "/")
+        copy_scene_folders_path = copy_scene_path[: -copy_scene_path[::-1].find("/")]
+        os.makedirs(copy_scene_folders_path, exist_ok=True)  # Create missing folders
+        shutil.copy2(scene_path, copy_scene_path)
+
     def save_as(self) -> None:
         """Save the current scene to the specified path"""
         if self.project is None or self.scene_name == "":
@@ -162,7 +172,12 @@ class SaveAs(QDialog):
         os.makedirs(scene_folders_path, exist_ok=True)  # Create missing folders
         cmds.file(rename=scene_path)
         cmds.file(save=True)
+
+        if self.ui.cb_publish.isChecked():
+            self.publish(scene_path)
+
         self.save_thumbnail()
+
         self.close()
 
     def save_thumbnail(self) -> None:
@@ -250,6 +265,7 @@ class Save(QDialog):
         super().__init__(parent)
         self.init_maya_ui("interface\\save.ui")
         self.scene_version = None
+        self.thumbnail_path = None
 
     def show_window(self) -> None:
         self.resize(798, 132)
@@ -305,8 +321,17 @@ class Save(QDialog):
 
         cmds.file(rename=scene_path)
         cmds.file(save=True)
+        if self.ui.cb_publish.isChecked():
+            self.publish(scene_path)
         self.save_thumbnail()
         self.close()
+
+    def publish(self, scene_path):
+        self.scene_name = self.scene_name
+        copy_scene_path = scene_path.replace("WORK/", "PUBLISH/")
+        copy_scene_folders_path = copy_scene_path[: -copy_scene_path[::-1].find("/")]
+        os.makedirs(copy_scene_folders_path, exist_ok=True)  # Create missing folders
+        shutil.copy2(scene_path, copy_scene_path)
 
     def save_thumbnail(self) -> None:
         """Create a thumbnail of the current scene"""
