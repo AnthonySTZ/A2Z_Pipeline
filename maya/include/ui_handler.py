@@ -234,6 +234,7 @@ class Save(QDialog):
         self.ui.pb_save.clicked.connect(self.save_scene)
         self.ui.pb_add_version.clicked.connect(lambda x: self.add_version(1))
         self.ui.pb_sub_version.clicked.connect(lambda x: self.add_version(-1))
+        self.ui.pb_screenshot.clicked.connect(self.take_screenshot)
 
     def update_name_and_path(self) -> None:
         """Update save name label with the current scene name"""
@@ -269,7 +270,17 @@ class Save(QDialog):
 
         cmds.file(rename=scene_path)
         cmds.file(save=True)
+        self.save_thumbnail()
         self.close()
+
+    def save_thumbnail(self) -> None:
+        """Create a thumbnail of the current scene"""
+        if not self.thumbnail_path:
+            return
+        if not os.path.exists(self.thumbnail_path):
+            return
+        path = self.create_thumbnail_path()
+        shutil.copy2(self.thumbnail_path, path)
 
     def overwrite_scene(self) -> bool:
         """Ask the user if they want to overwrite an existing scene"""
@@ -281,6 +292,42 @@ class Save(QDialog):
             QMessageBox.No,
         )
         return reply == QMessageBox.Yes
+
+    def create_thumbnail_path(self) -> str:
+        scene_path = self.ui.l_path.text().replace("\\", "/")[:-3]
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "thumnails/"
+        os.makedirs(scene_folders_path, exist_ok=True)
+        scene_name = scene_path[-scene_path[::-1].find("/") :]
+        path = scene_folders_path + scene_name + ".jpg"
+        return path
+
+    def take_screenshot(self) -> None:
+        """Take a screenshot of the current scene"""
+        scene_path = self.ui.l_path.text().replace("\\", "/")[:-3]
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "/thumnails/"
+        # os.makedirs(scene_folders_path, exist_ok=True)
+        scene_name = scene_path[-scene_path[::-1].find("/") :]
+        path = self.create_tmp_path() + "thumbnail_tmp.jpg"
+        cmds.playblast(frame=1, cf=path, fmt="iff", orn=0, v=0)
+        self.set_thumbnails_image(path)
+        self.thumbnail_path = path
+
+    def create_tmp_path(self):
+        """
+        Return tmp folder path
+        """
+        path = tempfile.gettempdir() + "\\pipelineThumbnailsTmp\\"
+        path = path.replace("\\", "/")
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        return path
+
+    def set_thumbnails_image(self, imagePath):
+
+        pixmap = QPixmap(imagePath).scaledToHeight(90)
+        self.ui.l_thumbnail.setPixmap(pixmap)
+        self.ui.l_thumbnail.setText("")
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
