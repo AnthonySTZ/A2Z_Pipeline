@@ -231,6 +231,7 @@ class Save(QDialog):
 
     def init_ui(self) -> None:
         self.update_name_and_path()
+        self.update_thumbnail()
         self.ui.pb_save.clicked.connect(self.save_scene)
         self.ui.pb_add_version.clicked.connect(lambda x: self.add_version(1))
         self.ui.pb_sub_version.clicked.connect(lambda x: self.add_version(-1))
@@ -251,10 +252,15 @@ class Save(QDialog):
         self.ui.l_name.setText(scene_name)
         self.ui.l_path.setText(scene_path)
 
+    def update_thumbnail(self) -> None:
+        path = self.create_thumbnail_path()
+        self.set_thumbnails_image(path)
+
     def add_version(self, num: int) -> None:
         if self.scene_version + num >= 0:
             self.scene_version += num
         self.update_name_and_path()
+        self.update_thumbnail()
 
     def save_scene(self) -> None:
         """Save the current scene to the specified path"""
@@ -324,7 +330,9 @@ class Save(QDialog):
         return path
 
     def set_thumbnails_image(self, imagePath):
-
+        if not os.path.exists(imagePath):
+            self.ui.l_thumbnail.setPixmap(QPixmap())
+            return
         pixmap = QPixmap(imagePath).scaledToHeight(90)
         self.ui.l_thumbnail.setPixmap(pixmap)
         self.ui.l_thumbnail.setText("")
