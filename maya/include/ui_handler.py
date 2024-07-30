@@ -3,6 +3,7 @@ from PySide2.QtWidgets import QDialog, QVBoxLayout, QApplication, QMessageBox
 from PySide2 import QtCore, QtUiTools
 from include.project_handler import ProjectHandler
 import maya.cmds as cmds
+import datetime
 
 PROJECT_PATH = "A:/Programming/A2Z_Pipeline/test"
 
@@ -224,6 +225,168 @@ class Save(QDialog):
             QMessageBox.No,
         )
         return reply == QMessageBox.Yes
+
+    def init_maya_ui(self, uiRelativePath) -> None:
+        loader = QtUiTools.QUiLoader()
+        dirname = os.path.dirname(__file__)
+        uiFilePath = os.path.join(dirname, uiRelativePath)
+        uifile = QtCore.QFile(uiFilePath)
+        uifile.open(QtCore.QFile.ReadOnly)
+        self.ui = loader.load(uifile)
+        self.centralLayout = QVBoxLayout(self)
+        self.centralLayout.setContentsMargins(0, 0, 0, 0)
+        self.centralLayout.addWidget(self.ui)
+
+
+class Open(QDialog):
+    def __init__(self, parent=QApplication.activeWindow()):
+        super().__init__(parent)
+        self.init_maya_ui("interface\\open.ui")
+        self.projects_path = PROJECT_PATH
+        self.project = None
+
+    def show_window(self) -> None:
+        self.resize(798, 132)
+        self.init_ui()
+        self.show()
+
+    def init_ui(self) -> None:
+        self.update_projects_list()
+        self.selected_project_changed()
+        self.update_shots_list()
+        self.update_kind_list()
+        self.update_scene()
+        self.ui.cb_project.currentIndexChanged.connect(self.selected_project_changed)
+        self.ui.cb_type.currentIndexChanged.connect(self.update_kind_list)
+        self.ui.cb_kind.currentIndexChanged.connect(self.update_scene)
+        self.ui.cb_scene.currentIndexChanged.connect(self.update_path)
+        self.ui.pb_open.clicked.connect(self.open_scene)
+        self.ui.pb_ref.clicked.connect(self.open_as_ref)
+
+    def update_projects_list(self) -> None:
+        """Populate project list combo box with available projects from the projects path"""
+        self.ui.cb_project.clear()
+        if not os.path.exists(self.projects_path):
+            print("Invalid projects path")
+            return
+        project_names = [
+            project.name
+            for project in os.scandir(self.projects_path)
+            if os.path.isdir(os.path.join(self.projects_path, project))
+        ]
+        for project_name in project_names:
+            self.ui.cb_project.addItem(project_name)
+
+    def selected_project_changed(self) -> None:
+        """Update save path label with the selected project, shot, and kind"""
+        selected_project = self.ui.cb_project.currentText()
+        if selected_project == "":
+            self.project = None
+            return
+        project_path = os.path.join(self.projects_path, selected_project)
+        if not os.path.exists(project_path):
+            print(f"Project '{selected_project}' not found")
+            return
+        self.project = ProjectHandler(project_path)
+        self.update_shots_list()
+
+    def update_shots_list(self) -> None:
+        """Populate shot list combo box with available shots from the selected project"""
+        if self.project is None:
+            self.update_scene()
+            return
+        shots = self.project.get_all_shots()
+        self.ui.cb_shot.clear()
+        for shot in shots:
+            self.ui.cb_shot.addItem("s" + shot.number + "_" + shot.name)
+
+        self.update_scene()
+
+    def update_kind_list(self) -> None:
+        """Populate kind list combo box with available kinds"""
+        self.ui.cb_kind.clear()
+        kinds = {
+            "ASSETS": ["MODEL", "GROOM", "ANIM", "SHADING", "MUSCLE"],
+            "SHOTS": ["ANIM", "FX", "LIGHT", "RENDER"],
+            "RND": ["MODEL", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
+        }
+        type = self.ui.cb_type.currentText()
+        for kind in kinds[type]:
+            self.ui.cb_kind.addItem(kind)
+
+        self.update_scene()
+        self.update_path()
+
+    def update_scene(self) -> None:
+        selected_shot = self.ui.cb_shot.currentText()
+        selected_type = self.ui.cb_type.currentText()
+        selected_kind = self.ui.cb_kind.currentText()
+        if self.project is None or selected_shot == "" or selected_kind == "":
+            self.ui.l_path.setText("")
+            self.ui.cb_scene.clear()
+            return
+        type_folder = {
+            "ASSETS": "30_assets",
+            "SHOTS": "40_shots",
+            "RND": "10_preprod/rnd",
+        }
+        self.scenes_path = (
+            self.project.path
+            + "/"
+            + type_folder[selected_type]
+            + "/"
+            + selected_shot
+            + "/"
+            + selected_kind
+        )
+        self.ui.cb_scene.clear()
+        if not os.path.exists(self.scenes_path):
+            return
+        files = [f.name for f in os.scandir(self.scenes_path)][::-1]
+        for file in files:
+            self.ui.cb_scene.addItem(file)
+
+    def get_scene_path(self) -> str:
+        selected_scene = self.ui.cb_scene.currentText()
+        if selected_scene == "":
+            return ""
+        return os.path.join(self.scenes_path, selected_scene)
+
+    def update_path(self) -> None:
+        """Update save path label with the selected scene path"""
+        selected_scene = self.get_scene_path()
+        self.ui.l_path.setText(selected_scene)
+        self.update_scene_infos()
+
+    def update_scene_infos(self) -> None:
+        selected_scene = self.get_scene_path()
+        if selected_scene == "":
+            self.ui.l_date.setText("")
+            self.ui.l_size.setText("")
+            return
+        scene_infos = os.stat(selected_scene)
+        self.ui.l_date.setText(
+            str(datetime.datetime.fromtimestamp(scene_infos.st_mtime))[:-7]
+        )
+        self.ui.l_size.setText("%.2f" % (scene_infos.st_size / (1024 * 1024)) + " MB")
+
+    def open_scene(self) -> None:
+        """Open the selected scene in Maya"""
+        selected_scene = self.get_scene_path()
+        if selected_scene == "":
+            print("Invalid scene path")
+            return
+        cmds.file(selected_scene, open=True, force=True)
+        self.close()
+
+    def open_as_ref(self) -> None:
+        """Open the selected scene in Maya as a reference"""
+        selected_scene = self.get_scene_path()
+        if selected_scene == "":
+            print("Invalid scene path")
+            return
+        cmds.file(selected_scene, reference=True, force=True)
+        self.close()
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()

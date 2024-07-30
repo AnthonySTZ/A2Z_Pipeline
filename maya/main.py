@@ -1,4 +1,4 @@
-from include.ui_handler import SaveAs, Save
+from include.ui_handler import SaveAs, Save, Open
 from maya import OpenMayaUI as omui
 import maya.cmds as cmds
 from shiboken2 import wrapInstance
@@ -22,14 +22,18 @@ def create_window(dialog: QDialog):
     dialog.window.show_window()
 
 
-def openWindow():
+def openWindow(type: str):
     """
     ID Maya and attach tool window.
     """
 
     filename = cmds.file(q=True, sn=True)
 
-    if filename:
-        create_window(Save)
-    else:
-        create_window(SaveAs)
+    if type == "Save":
+        if filename:
+            create_window(Save)
+        else:
+            create_window(SaveAs)
+
+    elif type == "Open":
+        create_window(Open)

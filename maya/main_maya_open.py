@@ -12,4 +12,4 @@ import include.ui_handler as ui_handler
 reload(project_handler)
 reload(ui_handler)
 reload(main)
-main.openWindow()
+main.openWindow("Open")
