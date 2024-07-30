@@ -112,7 +112,7 @@
          <widget class="QWidget" name="widget_3" native="true">
           <property name="minimumSize">
            <size>
-            <width>130</width>
+            <width>150</width>
             <height>130</height>
            </size>
           </property>
@@ -123,7 +123,24 @@
            </size>
           </property>
           <layout class="QGridLayout" name="gridLayout">
-           <item row="0" column="0">
+           <property name="spacing">
+            <number>0</number>
+           </property>
+           <item row="1" column="0">
+            <widget class="QPushButton" name="pb_screenshot">
+             <property name="text">
+              <string>Screenshot</string>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="1">
+            <widget class="QPushButton" name="pb_browse">
+             <property name="text">
+              <string>Browse</string>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="0" colspan="2">
             <widget class="QLabel" name="l_thumbnail">
              <property name="sizePolicy">
               <sizepolicy hsizetype="Preferred" vsizetype="Preferred">

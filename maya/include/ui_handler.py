@@ -1,8 +1,11 @@
 import os
 from PySide2.QtWidgets import QDialog, QVBoxLayout, QApplication, QMessageBox
 from PySide2 import QtCore, QtUiTools
+from PySide2.QtGui import QPixmap
 from include.project_handler import ProjectHandler
 import maya.cmds as cmds
+import tempfile
+import shutil
 import datetime
 
 PROJECT_PATH = "A:/Programming/A2Z_Pipeline/test"
@@ -30,6 +33,7 @@ class SaveAs(QDialog):
         self.ui.cb_type.currentIndexChanged.connect(self.update_kind_list)
         self.ui.cb_kind.currentIndexChanged.connect(self.update_path)
         self.ui.pb_save.clicked.connect(self.save_as)
+        self.ui.pb_screenshot.clicked.connect(self.take_screenshot)
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
@@ -148,7 +152,19 @@ class SaveAs(QDialog):
         os.makedirs(scene_folders_path, exist_ok=True)  # Create missing folders
         cmds.file(rename=scene_path)
         cmds.file(save=True)
+        self.save_thumbnail()
         self.close()
+
+    def save_thumbnail(self) -> None:
+        """Create a thumbnail of the current scene"""
+        if not self.thumbnail_path:
+            return
+        if not os.path.exists(self.thumbnail_path):
+            return
+
+        path = self.create_thumbnail_path()
+
+        shutil.copy2(self.thumbnail_path, path)
 
     def overwrite_scene(self) -> bool:
         """Ask the user if they want to overwrite an existing scene"""
@@ -160,6 +176,46 @@ class SaveAs(QDialog):
             QMessageBox.No,
         )
         return reply == QMessageBox.Yes
+
+    def create_thumbnail_path(self) -> str:
+        scene_path = os.path.join(
+            self.projects_path, self.project.name, self.scene_name
+        ).replace("\\", "/")[:-3]
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "thumnails/"
+        os.makedirs(scene_folders_path, exist_ok=True)
+        scene_name = scene_path[-scene_path[::-1].find("/") :]
+        path = scene_folders_path + scene_name + ".jpg"
+        return path
+
+    def take_screenshot(self) -> None:
+        """Take a screenshot of the current scene"""
+        scene_path = os.path.join(
+            self.projects_path, self.project.name, self.scene_name
+        ).replace("\\", "/")[:-3]
+        scene_folders_path = scene_path[: -scene_path[::-1].find("/")] + "/thumnails/"
+        # os.makedirs(scene_folders_path, exist_ok=True)
+        scene_name = scene_path[-scene_path[::-1].find("/") :]
+        path = self.create_tmp_path() + "thumbnail_tmp.jpg"
+        cmds.playblast(frame=1, cf=path, fmt="iff", orn=0, v=0)
+        self.set_thumbnails_image(path)
+        self.thumbnail_path = path
+
+    def create_tmp_path(self):
+        """
+        Return tmp folder path
+        """
+        path = tempfile.gettempdir() + "\\pipelineThumbnailsTmp\\"
+        path = path.replace("\\", "/")
+        if not os.path.exists(path):
+            os.makedirs(path)
+
+        return path
+
+    def set_thumbnails_image(self, imagePath):
+
+        pixmap = QPixmap(imagePath).scaledToHeight(90)
+        self.ui.l_thumbnail.setPixmap(pixmap)
+        self.ui.l_thumbnail.setText("")
 
 
 class Save(QDialog):
