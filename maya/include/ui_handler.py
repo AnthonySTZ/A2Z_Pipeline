@@ -764,3 +764,30 @@ class ExportMesh(QDialog):
         self.centralLayout = QVBoxLayout(self)
         self.centralLayout.setContentsMargins(0, 0, 0, 0)
         self.centralLayout.addWidget(self.ui)
+
+
+class Render(QDialog):
+    def __init__(self, parent=QApplication.activeWindow()):
+        super().__init__(parent)
+        self.init_maya_ui("interface\\render.ui")
+        self.projects_path = PROJECT_PATH
+        self.project = None
+
+    def show_window(self) -> None:
+        self.resize(798, 161)
+        self.init_ui()
+        self.show()
+
+    def init_ui(self) -> None:
+        pass
+
+    def init_maya_ui(self, uiRelativePath) -> None:
+        loader = QtUiTools.QUiLoader()
+        dirname = os.path.dirname(__file__)
+        uiFilePath = os.path.join(dirname, uiRelativePath)
+        uifile = QtCore.QFile(uiFilePath)
+        uifile.open(QtCore.QFile.ReadOnly)
+        self.ui = loader.load(uifile)
+        self.centralLayout = QVBoxLayout(self)
+        self.centralLayout.setContentsMargins(0, 0, 0, 0)
+        self.centralLayout.addWidget(self.ui)

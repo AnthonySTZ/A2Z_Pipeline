@@ -1,4 +1,4 @@
-from include.ui_handler import SaveAs, Save, Open, ExportMesh
+from include.ui_handler import SaveAs, Save, Open, ExportMesh, Render
 from maya import OpenMayaUI as omui
 import maya.cmds as cmds
 from shiboken2 import wrapInstance
@@ -39,3 +39,5 @@ def openWindow(type: str):
         create_window(Open)
     elif type == "Export_Mesh":
         create_window(ExportMesh)
+    elif type == "Render":
+        create_window(Render)
