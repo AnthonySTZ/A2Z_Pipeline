@@ -15,6 +15,7 @@ import tempfile
 import shutil
 import datetime
 
+
 PROJECT_PATH = "A:/Programming/A2Z_Pipeline/test"
 
 
@@ -846,7 +847,21 @@ class Render(QDialog):
             self.playblast()
             return
 
-        # cmds.render(batch=True)
+        path = (
+            self.project.path
+            + "/40_shots/"
+            + self.ui.cb_shot.currentText()
+            + "/"
+            + self.ui.cb_type.currentText()
+            + "/WORK/"
+            + self.ui.le_name.text()
+        )
+        if self.ui.cb_publish.isChecked():
+            path = path.replace("/WORK/", "/PUBLISH/")
+
+        os.makedirs(path, exist_ok=True)
+        cmds.workspace(fileRule=["images", path])
+        cmds.arnoldRender(batch=True)
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
