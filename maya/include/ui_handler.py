@@ -779,7 +779,74 @@ class Render(QDialog):
         self.show()
 
     def init_ui(self) -> None:
-        pass
+        self.update_projects_list()
+        self.selected_project_changed()
+        self.update_shots_list()
+        self.ui.cb_project.currentIndexChanged.connect(self.selected_project_changed)
+        self.ui.pb_render.clicked.connect(self.render)
+
+    def update_projects_list(self) -> None:
+        if not os.path.exists(self.projects_path):
+            print("Invalid projects path")
+            return
+        project_names = [
+            project.name
+            for project in os.scandir(self.projects_path)
+            if os.path.isdir(os.path.join(self.projects_path, project))
+        ]
+        for project_name in project_names:
+            self.ui.cb_project.addItem(project_name)
+
+    def selected_project_changed(self) -> None:
+        """Update save path label with the selected project, shot, and kind"""
+        selected_project = self.ui.cb_project.currentText()
+        if selected_project == "":
+            self.project = None
+            return
+        project_path = os.path.join(self.projects_path, selected_project)
+        if not os.path.exists(project_path):
+            print(f"Project '{selected_project}' not found")
+            return
+        self.project = ProjectHandler(project_path)
+        self.update_shots_list()
+
+    def update_shots_list(self) -> None:
+        """Populate shot list combo box with available shots from the selected project"""
+        if self.project is None:
+            return
+        shots = self.project.get_all_shots()
+        self.ui.cb_shot.clear()
+        for shot in shots:
+            self.ui.cb_shot.addItem("s" + shot.number + "_" + shot.name)
+
+    def playblast(self) -> None:
+        path = (
+            self.project.path
+            + "/40_shots/"
+            + self.ui.cb_shot.currentText()
+            + "/ANIM/WORK/"
+            + self.ui.le_name.text()
+        )
+        if self.ui.cb_publish.isChecked():
+            path = path.replace("/WORK/", "/PUBLISH/")
+
+        path_folder = path[: -path[::-1].find("/")]
+        os.makedirs(path_folder, exist_ok=True)
+        cmds.playblast(filename=path)
+        self.close()
+
+    def render(self) -> None:
+        if (
+            self.project is None
+            or self.ui.le_name.text() == ""
+            or self.ui.cb_shot.currentText() == ""
+        ):
+            return
+        if self.ui.cb_type.currentText() == "ANIM (playblast)":
+            self.playblast()
+            return
+
+        # cmds.render(batch=True)
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()

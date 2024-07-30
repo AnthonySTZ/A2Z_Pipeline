@@ -144,18 +144,6 @@
              </item>
             </widget>
            </item>
-           <item row="2" column="0" colspan="3">
-            <widget class="QLabel" name="l_path">
-             <property name="font">
-              <font>
-               <pointsize>10</pointsize>
-              </font>
-             </property>
-             <property name="text">
-              <string>Path</string>
-             </property>
-            </widget>
-           </item>
            <item row="1" column="1">
             <spacer name="verticalSpacer">
              <property name="orientation">
@@ -176,6 +164,37 @@
                <pointsize>10</pointsize>
               </font>
              </property>
+            </widget>
+           </item>
+           <item row="2" column="1">
+            <widget class="QLineEdit" name="le_name">
+             <property name="font">
+              <font>
+               <pointsize>10</pointsize>
+              </font>
+             </property>
+             <property name="placeholderText">
+              <string>enter a name...</string>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="2">
+            <widget class="QComboBox" name="cb_format">
+             <item>
+              <property name="text">
+               <string>.exr</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>.tiff</string>
+              </property>
+             </item>
+             <item>
+              <property name="text">
+               <string>.png</string>
+              </property>
+             </item>
             </widget>
            </item>
           </layout>
@@ -209,7 +228,7 @@
             </widget>
            </item>
            <item>
-            <widget class="QPushButton" name="pb_save">
+            <widget class="QPushButton" name="pb_render">
              <property name="minimumSize">
               <size>
                <width>0</width>
