@@ -99,7 +99,7 @@ class SaveAs(QDialog):
         """Populate kind list combo box with available kinds"""
         self.ui.cb_kind.clear()
         kinds = {
-            "ASSETS": ["MODEL", "GROOM", "ANIM", "SHADING", "MUSCLE"],
+            "ASSETS": ["MODEL", "RIGGING" "GROOM", "ANIM", "SHADING", "MUSCLE"],
             "SHOTS": ["ANIM", "FX", "LIGHT", "RENDER"],
             "RND": ["MODEL", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
         }
@@ -463,7 +463,7 @@ class Open(QDialog):
         """Populate kind list combo box with available kinds"""
         self.ui.cb_kind.clear()
         kinds = {
-            "ASSETS": ["MODEL", "GROOM", "ANIM", "SHADING", "MUSCLE"],
+            "ASSETS": ["MODEL", "RIGGING", "GROOM", "ANIM", "SHADING", "MUSCLE"],
             "SHOTS": ["ANIM", "FX", "LIGHT", "RENDER"],
             "RND": ["MODEL", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
         }
