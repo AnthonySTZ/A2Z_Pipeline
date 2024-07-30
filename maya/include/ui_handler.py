@@ -10,6 +10,7 @@ from PySide2 import QtCore, QtUiTools
 from PySide2.QtGui import QPixmap
 from include.project_handler import ProjectHandler
 import maya.cmds as cmds
+import maya.mel as mel
 import tempfile
 import shutil
 import datetime
@@ -584,6 +585,8 @@ class ExportMesh(QDialog):
     def __init__(self, parent=QApplication.activeWindow()):
         super().__init__(parent)
         self.init_maya_ui("interface\\export_mesh.ui")
+        self.projects_path = PROJECT_PATH
+        self.project = None
 
     def show_window(self) -> None:
         self.resize(798, 132)
@@ -591,7 +594,140 @@ class ExportMesh(QDialog):
         self.show()
 
     def init_ui(self) -> None:
-        pass
+        self.update_projects_list()
+        self.update_project()
+        self.update_kind_list()
+        self.ui.cb_project.currentIndexChanged.connect(self.selected_project_changed)
+        self.ui.cb_type.currentIndexChanged.connect(self.update_kind_list)
+        self.ui.pb_export.clicked.connect(self.export_mesh)
+
+    def update_projects_list(self) -> None:
+        if not os.path.exists(self.projects_path):
+            print("Invalid projects path")
+            return
+        project_names = [
+            project.name
+            for project in os.scandir(self.projects_path)
+            if os.path.isdir(os.path.join(self.projects_path, project))
+        ]
+        for project_name in project_names:
+            self.ui.cb_project.addItem(project_name)
+
+    def update_project(self) -> None:
+        selected_project = self.ui.cb_project.currentText()
+        if selected_project == "":
+            self.project = None
+            return
+        project_path = os.path.join(self.projects_path, selected_project)
+        if not os.path.exists(project_path):
+            print(f"Project '{selected_project}' not found")
+            return
+        self.project = ProjectHandler(project_path)
+        self.update_shots_list()
+
+    def update_shots_list(self) -> None:
+        if self.project is None:
+            self.update_scene()
+            return
+        shots = self.project.get_all_shots()
+        self.ui.cb_shot.clear()
+        for shot in shots:
+            self.ui.cb_shot.addItem("s" + shot.number + "_" + shot.name)
+
+    def selected_project_changed(self) -> None:
+        """Update save path label with the selected project, shot, and kind"""
+        selected_project = self.ui.cb_project.currentText()
+        if selected_project == "":
+            self.project = None
+            return
+        project_path = os.path.join(self.projects_path, selected_project)
+        if not os.path.exists(project_path):
+            print(f"Project '{selected_project}' not found")
+            return
+        self.project = ProjectHandler(project_path)
+        self.update_shots_list()
+
+    def update_shots_list(self) -> None:
+        """Populate shot list combo box with available shots from the selected project"""
+        if self.project is None:
+            return
+        shots = self.project.get_all_shots()
+        self.ui.cb_shot.clear()
+        for shot in shots:
+            self.ui.cb_shot.addItem("s" + shot.number + "_" + shot.name)
+
+    def update_kind_list(self) -> None:
+        """Populate kind list combo box with available kinds"""
+        self.ui.cb_kind.clear()
+        kinds = {
+            "ASSETS": ["MODEL", "GROOM", "ANIM", "SHADING", "MUSCLE"],
+            "SHOTS": ["ANIM", "FX", "LIGHT", "RENDER"],
+            "RND": ["MODEL", "GROOM", "ANIM", "SHADING", "LIGHT", "MUSCLE"],
+        }
+        type = self.ui.cb_type.currentText()
+        for kind in kinds[type]:
+            self.ui.cb_kind.addItem(kind)
+
+    def get_mesh_path(self) -> str:
+        selected_shot = self.ui.cb_shot.currentText()
+        selected_type = self.ui.cb_type.currentText()
+        selected_kind = self.ui.cb_kind.currentText()
+        selected_format = self.ui.cb_format.currentText()
+        mesh_name = self.ui.le_name.text()
+        if (
+            self.project is None
+            or selected_shot == ""
+            or selected_kind == ""
+            or mesh_name == ""
+        ):
+            print("Invalid selection")
+            return None
+        type_folder = {
+            "ASSETS": "30_assets",
+            "SHOTS": "40_shots",
+            "RND": "10_preprod/rnd",
+        }
+        mesh_path = (
+            self.project.path
+            + "/"
+            + type_folder[selected_type]
+            + "/"
+            + selected_shot
+            + "/"
+            + selected_kind
+            + "/"
+            + "EXPORT/"
+            + selected_shot
+            + "_"
+            + selected_kind
+            + "_"
+            + mesh_name
+            + selected_format
+        )
+        return mesh_path
+
+    def export_mesh(self) -> None:
+        """Export selected scene mesh to specified path"""
+        export_path = self.get_mesh_path()
+        if export_path is None:
+            return
+        export_folders = export_path[: -export_path[::-1].find("/")]
+        os.makedirs(export_folders, exist_ok=True)
+        format = self.ui.cb_format.currentText()
+        if format == ".obj":
+            cmds.file(
+                export_path,
+                exportSelected=self.ui.cb_export_selected.isChecked(),
+                type="OBJexport",
+                op="groups=0; ptgroups=0;materials=0; smoothing=0; normals=0",
+                force=True,
+            )
+        elif format == ".fbx":
+            if self.ui.cb_export_selected.isChecked():
+                mel.eval('FBXExport -f "{0}" -s'.format(export_path))
+            else:
+                mel.eval('FBXExport -f "{0}"'.format(export_path))
+        self.close()
 
     def init_maya_ui(self, uiRelativePath) -> None:
         loader = QtUiTools.QUiLoader()
