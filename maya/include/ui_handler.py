@@ -253,7 +253,7 @@ class Save(QDialog):
         self.ui.l_path.setText(scene_path)
 
     def update_thumbnail(self) -> None:
-        path = self.create_thumbnail_path()
+        path = self.create_tmp_path() + "thumbnail_tmp.jpg"
         self.set_thumbnails_image(path)
 
     def add_version(self, num: int) -> None:
@@ -324,8 +324,7 @@ class Save(QDialog):
         """
         path = tempfile.gettempdir() + "\\pipelineThumbnailsTmp\\"
         path = path.replace("\\", "/")
-        if not os.path.exists(path):
-            os.makedirs(path)
+        os.makedirs(path, exist_ok=True)
 
         return path
 
