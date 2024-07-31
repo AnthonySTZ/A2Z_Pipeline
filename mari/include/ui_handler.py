@@ -27,6 +27,9 @@ class MariWindow(QDialog):
         self.projects_path = PROJECT_PATH
         self.project = None
         self.export_channel_checkboxes = []
+        self.channel_sizes = []
+        self.channel_colorspaces = []
+        self.channel_depths = []
 
     def show_window(self) -> None:
         self.resize(600, 400)
@@ -126,6 +129,7 @@ class MariWindow(QDialog):
         for size in sizes_list:
             size_text = str(size) + "x" + str(size)
             combobox.addItem(size_text)
+        self.channel_sizes.append(combobox)
         layout = QHBoxLayout(combobox_widget)
         layout.addWidget(combobox)
         layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -139,6 +143,7 @@ class MariWindow(QDialog):
         combobox.addItem("Same as Source")
         for colorspace in colorpace_list:
             combobox.addItem(colorspace)
+        self.channel_colorspaces.append(combobox)
         layout = QHBoxLayout(combobox_widget)
         layout.addWidget(combobox)
         layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
@@ -152,11 +157,32 @@ class MariWindow(QDialog):
         combobox.addItem("Same as Source")
         for depth in depth_list:
             combobox.addItem(depth)
+        self.channel_depths.append(combobox)
         layout = QHBoxLayout(combobox_widget)
         layout.addWidget(combobox)
         layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignLeft)
         layout.setContentsMargins(5, 0, 0, 0)
         return combobox_widget
+
+    def update_channel_node_by_infos(self, channel, index: int) -> None:
+        channel_size = self.channel_sizes[index].currentIndex()
+        channel_colorspace = self.channel_colorspaces[index].currentIndex()
+        channel_depth = self.channel_depths[index].currentIndex()
+
+        if channel_size != 0:
+            sizes_list = [2**i for i in range(8, 14)]
+            size = mari.ImageSet.Size(sizes_list[channel_size - 1])
+            channel.resize(size)
+
+        if channel_colorspace != 0:
+            colorspace_list = channel.colorspaceConfig().availableColorspaces()
+            colorspace = colorspace_list[channel_colorspace - 1]
+            channel.convertColorspaceTo(colorspace)
+
+        if channel_depth != 0:
+            channel_depth_list = [8, 16, 32]
+            depth = mari.Image.Depth(channel_depth_list[channel_depth - 1])
+            channel.setDepth(depth, mari.Channel.ConvertOption(1))
 
     def export_event(self) -> None:
         """Export selected materials to the specified location"""
@@ -177,19 +203,19 @@ class MariWindow(QDialog):
         )
         if self.ui.cb_publish.isChecked():
             export_path = export_path.replace("/WORK/", "/PUBLISH/")
-        # os.makedirs(export_path, exist_ok=True)
+        os.makedirs(export_path, exist_ok=True)
         eItems = []
         self.channels = mari.geo.current().channelList()
         for i, channel in enumerate(self.channels):
             if not self.export_channel_checkboxes[i].isChecked():
                 continue
+            self.update_channel_node_by_infos(channel, i)
             eItem = mari.ExportItem()
             eItem.setSourceNode(channel.channelNode())
-            eItem.setFileTemplate("$ENTITY/$CHANNEL.$UDIM.tif")
+            eItem.setFileTemplate("$ENTITY/$CHANNEL.$UDIM.tiff")
             mari.exports.addExportItem(eItem, mari.geo.current())
             eItems.append(eItem)
-        # mari.exports.exportTextures(eItems, export_path)
-        print(eItems)
+        mari.exports.exportTextures(eItems, export_path)
 
     def init_mari_ui(self, ui_relative_path) -> None:
         loader = QtUiTools.QUiLoader()
