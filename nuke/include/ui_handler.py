@@ -38,6 +38,8 @@ class ImportNuke(QDialog):
         self.update_name_list()
         self.ui.cb_project.currentIndexChanged.connect(self.selected_project_changed)
         self.ui.cb_shot.currentIndexChanged.connect(self.update_name_list)
+        self.ui.cb_type.currentIndexChanged.connect(self.update_name_list)
+        self.ui.cb_published.stateChanged.connect(self.update_name_list)
         self.ui.pb_import.clicked.connect(self.import_sequence)
 
     def update_projects_list(self):
@@ -80,9 +82,48 @@ class ImportNuke(QDialog):
         if selected_shot == "":
             self.ui.cb_name.clear()
             return
+        selected_type = self.ui.cb_type.currentText()
+        folder_path = (
+            self.project.path
+            + "/40_shots/"
+            + selected_shot
+            + "/"
+            + selected_type
+            + "/WORK"
+        )
+        if self.ui.cb_published.isChecked():
+            folder_path = folder_path.replace("/WORK", "/PUBLISH")
+        if not os.path.exists(folder_path):
+            self.ui.cb_name.clear()
+            return
+        name_list = os.listdir(folder_path)
+        self.ui.cb_name.addItems(name_list)
+
+    def create_read_node(self, folder_path: str) -> nuke.Node:
+        """Create a Nuke Read node"""
+        for seq in nuke.getFileNameList(folder_path):
+            readNode = nuke.createNode("Read")
+            readNode.knob("file").fromUserText(folder_path + "/" + seq)
 
     def import_sequence(self) -> None:
-        pass
+        selected_shot = self.ui.cb_shot.currentText()
+        selected_type = self.ui.cb_type.currentText()
+        selected_name = self.ui.cb_name.currentText()
+        folder_path = (
+            self.project.path
+            + "/40_shots/"
+            + selected_shot
+            + "/"
+            + selected_type
+            + "/WORK/"
+            + selected_name
+        )
+        if self.ui.cb_published.isChecked():
+            folder_path = folder_path.replace("/WORK/", "/PUBLISH/")
+        if not os.path.exists(folder_path):
+            QMessageBox.information(self, "Error", "Folder not found")
+            return
+        self.create_read_node(folder_path)
 
     def init_mari_ui(self, ui_relative_path) -> None:
         loader = QtUiTools.QUiLoader()
