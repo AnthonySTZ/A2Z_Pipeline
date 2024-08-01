@@ -24,7 +24,39 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
             MainWindow.setObjectName(u"MainWindow")
-        MainWindow.resize(800, 600)
+        MainWindow.resize(800, 610)
+        MainWindow.setStyleSheet(u"#centralwidget, QDialog, QInputDialog{\n"
+"\n"
+"\n"
+"	background-color: rgb(49, 49, 49);\n"
+"\n"
+"\n"
+"}\n"
+"\n"
+".QLabel{\n"
+"\n"
+"	color: rgb(222, 222, 222);\n"
+"}\n"
+"\n"
+"QComboBox{\n"
+"	color: rgb(222, 222, 222);	\n"
+"	background-color: rgb(61, 61, 61);\n"
+"	border: 0;\n"
+"\n"
+"}\n"
+"\n"
+".QPushButton, QLineEdit, QTextEdit{\n"
+"\n"
+"	color: rgb(222, 222, 222);	\n"
+"	background-color: rgb(61, 61, 61);\n"
+"}\n"
+"\n"
+".QTableWidget, QHeaderView::section {\n"
+"\n"
+"	color: rgb(222, 222, 222);	\n"
+"	background-color: rgb(61, 61, 61);\n"
+"\n"
+"}")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.gridLayout_3 = QGridLayout(self.centralwidget)
@@ -42,6 +74,7 @@ class Ui_MainWindow(object):
         self.gridLayout_2.addWidget(self.label, 0, 0, 1, 1)
 
         self.cb_projects = QComboBox(self.widget)
+        self.cb_projects.addItem("")
         self.cb_projects.setObjectName(u"cb_projects")
         self.cb_projects.setMinimumSize(QSize(150, 25))
         self.cb_projects.setMaximumSize(QSize(150, 25))
@@ -52,6 +85,9 @@ class Ui_MainWindow(object):
         self.pb_add_projects.setObjectName(u"pb_add_projects")
         self.pb_add_projects.setMinimumSize(QSize(25, 25))
         self.pb_add_projects.setMaximumSize(QSize(25, 25))
+        font1 = QFont()
+        font1.setPointSize(12)
+        self.pb_add_projects.setFont(font1)
 
         self.gridLayout_2.addWidget(self.pb_add_projects, 0, 2, 1, 1)
 
@@ -68,6 +104,7 @@ class Ui_MainWindow(object):
         self.gridLayout.setObjectName(u"gridLayout")
         self.pb_add_shot = QPushButton(self.widget_2)
         self.pb_add_shot.setObjectName(u"pb_add_shot")
+        self.pb_add_shot.setFont(font)
 
         self.gridLayout.addWidget(self.pb_add_shot, 0, 0, 1, 1)
 
@@ -118,8 +155,10 @@ class Ui_MainWindow(object):
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"A2Z Pipeline", None))
         self.label.setText(QCoreApplication.translate("MainWindow", u"Project :", None))
+        self.cb_projects.setItemText(0, QCoreApplication.translate("MainWindow", u"Project Example", None))
+
         self.pb_add_projects.setText(QCoreApplication.translate("MainWindow", u"+", None))
         self.pb_add_shot.setText(QCoreApplication.translate("MainWindow", u"Add Shot", None))
         ___qtablewidgetitem = self.tw_shots.horizontalHeaderItem(0)

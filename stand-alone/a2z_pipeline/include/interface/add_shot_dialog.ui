@@ -11,7 +11,34 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Add Shot</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">#centralwidget, QDialog, QInputDialog{
+
+
+	background-color: rgb(49, 49, 49);
+
+
+}
+
+.QLabel{
+
+	color: rgb(222, 222, 222);
+}
+
+QComboBox{
+	color: rgb(222, 222, 222);	
+	background-color: rgb(61, 61, 61);
+	border: 0;
+
+}
+
+.QPushButton, QLineEdit, QSpinBox{
+
+	color: rgb(222, 222, 222);	
+	background-color: rgb(61, 61, 61);
+}</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
    <item>

@@ -24,6 +24,31 @@ class Ui_Dialog(object):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
         Dialog.resize(365, 132)
+        Dialog.setStyleSheet(u"#centralwidget, QDialog, QInputDialog{\n"
+"\n"
+"\n"
+"	background-color: rgb(49, 49, 49);\n"
+"\n"
+"\n"
+"}\n"
+"\n"
+".QLabel{\n"
+"\n"
+"	color: rgb(222, 222, 222);\n"
+"}\n"
+"\n"
+"QComboBox{\n"
+"	color: rgb(222, 222, 222);	\n"
+"	background-color: rgb(61, 61, 61);\n"
+"	border: 0;\n"
+"\n"
+"}\n"
+"\n"
+".QPushButton, QLineEdit, QSpinBox{\n"
+"\n"
+"	color: rgb(222, 222, 222);	\n"
+"	background-color: rgb(61, 61, 61);\n"
+"}")
         self.horizontalLayout = QHBoxLayout(Dialog)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
         self.widget = QWidget(Dialog)
@@ -91,7 +116,7 @@ class Ui_Dialog(object):
     # setupUi
 
     def retranslateUi(self, Dialog):
-        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Dialog", None))
+        Dialog.setWindowTitle(QCoreApplication.translate("Dialog", u"Add Shot", None))
         self.le_shot_name.setPlaceholderText(QCoreApplication.translate("Dialog", u"Enter shot name..", None))
         self.label_2.setText(QCoreApplication.translate("Dialog", u"Shot Number :", None))
         self.pb_ok.setText(QCoreApplication.translate("Dialog", u"Ok", None))
