@@ -235,10 +235,6 @@ class ImportMari(QDialog):
         self.init_mari_ui("interface\\mari_import.ui")
         self.projects_path = PROJECT_PATH
         self.project = None
-        self.export_channel_checkboxes = []
-        self.channel_sizes = []
-        self.channel_colorspaces = []
-        self.channel_depths = []
 
     def show_window(self) -> None:
         self.resize(600, 76)
