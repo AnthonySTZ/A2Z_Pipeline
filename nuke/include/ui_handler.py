@@ -124,6 +124,7 @@ class ImportNuke(QDialog):
             QMessageBox.information(self, "Error", "Folder not found")
             return
         self.create_read_node(folder_path)
+        self.close()
 
     def init_mari_ui(self, ui_relative_path) -> None:
         loader = QtUiTools.QUiLoader()
