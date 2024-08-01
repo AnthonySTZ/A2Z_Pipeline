@@ -20,7 +20,7 @@ import mari
 PROJECT_PATH = "A:/Programming/A2Z_Pipeline/test"
 
 
-class MariWindow(QDialog):
+class ExportMari(QDialog):
     def __init__(self, parent=QApplication.activeWindow()):
         super().__init__(parent)
         self.init_mari_ui("interface\\mari_export.ui")
@@ -229,6 +229,6 @@ class MariWindow(QDialog):
         self.central_layout.addWidget(self.ui)
 
 
-def open_window():
-    window = MariWindow()
+def open_window(window_class):
+    window = window_class()
     window.show_window()

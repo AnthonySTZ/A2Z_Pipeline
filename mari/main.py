@@ -9,4 +9,4 @@ import include.ui_handler as ui_handler
 
 reload(project_handler)
 reload(ui_handler)
-ui_handler.open_window()
+ui_handler.open_window(ui_handler.ExportMari)
