@@ -12,13 +12,21 @@ Using the **Standalone** app, you can create a new **project** using the **+** b
 
 ### Save
 
-If the current maya scene is not saved, it will open an **A2Z SaveAs window**. Using this window, you can choose the **project**, the **department** and the **type** of scene.
+If the current maya scene is **not** saved, it will open an **A2Z SaveAs window**. Using this window, you can choose the **project**, the **shot**, the **department** and the **type** of scene.
 You can choose to **publish** the scene, that will save your scene into a publish folder.   
 You can also add a thumbnail to the scene, using the **Screenshot** button to take a screenshot of your current view in maya or using the **Browse** button to choose an image in your file explorer.  
 
-![Standalone Application](./assets/readme/maya_saveas.jpg)
+![Maya SaveAs](./assets/readme/maya_saveas.jpg)
 
 If the current maya scene is already saved, it will open an **A2Z Save window**. Using this window, you can choose the scene version, it will automatically increment by one at default.
 You can add a new thumbnail the same way as for the saveas window and publish the scene.
 
-![Standalone Application](./assets/readme/maya_save.jpg)
+![Maya Save](./assets/readme/maya_save.jpg)
+
+### Open
+
+To open a scene, you can use the **A2Z Open Window**. In this window, we can select the **project**, the **department**, the **shot** and the **type** of the scene. Next you will have a **dropdown** of all available scenes in the desired folder (it will automatically select the last scene).
+When you select a scene, you will see the saved **thumbnail** on the left and the **path** on the bottom. 
+Once you selected the desired scene, you can open the raw scene or import it **as reference**. 
+
+![Maya Open](./assets/readme/maya_open.jpg)
