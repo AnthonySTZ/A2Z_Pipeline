@@ -25,7 +25,7 @@ You can add a new thumbnail the same way as for the saveas window and publish th
 
 ### Open
 
-To open a scene, you can use the **A2Z Open Window**. In this window, we can select the **project**, the **department**, the **shot** and the **type** of the scene. Next you will have a **dropdown** of all available scenes in the desired folder (it will automatically select the last scene).
+To **open** a scene, you can use the **A2Z Open Window**. In this window, we can select the **project**, the **department**, the **shot** and the **type** of the scene. Next you will have a **dropdown** of all available scenes in the desired folder (it will automatically select the last scene).
 When you select a scene, you will see the saved **thumbnail** on the left and the **path** on the bottom. 
 Once you selected the desired scene, you can open the raw scene or import it **as reference**. 
 
