@@ -38,3 +38,13 @@ Below you can **name it** and choose the **file extension**.
 You just have to choose if you want to **export selection** by using the checkbox.
 
 ![Maya Export](./assets/readme/maya_export.jpg)
+
+### Render
+
+For rendering, you can use the **A2Z Render Window**. In this window, you can select the **project**, the **shot** and the **type** of the render.
+You can also **name** the render.
+It will render using the render settings of the maya scene.
+Using the **Animation** type, it will produce a playblast of the scene. 
+
+![Maya Export](./assets/readme/maya_render.jpg)
+
