@@ -17,3 +17,8 @@ You can choose to **publish** the scene, that will save your scene into a publis
 You can also add a thumbnail to the scene, using the **Screenshot** button to take a screenshot of your current view in maya or using the **Browse** button to choose an image in your file explorer.  
 
 ![Standalone Application](./assets/readme/maya_saveas.jpg)
+
+If the current maya scene is already saved, it will open an **A2Z Save window**. Using this window, you can choose the scene version, it will automatically increment by one at default.
+You can add a new thumbnail the same way as for the saveas window and publish the scene.
+
+![Standalone Application](./assets/readme/maya_save.jpg)
