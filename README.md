@@ -67,3 +67,13 @@ You will have a **list** of all textures that can be exported, foreach textures 
 You can next use the **export button**.
 
 ![Mari Export](./assets/readme/mari_export.jpg)
+
+## Nuke Plugin
+
+### Import
+
+For importing renders into nuke, you can use the **A2Z Import Window**. In this window, you can select the **project**, the **shot** and the **type** of render. 
+You will have a **dropdown menu** of all corresponding renders.
+You can next use the **import button**.
+
+![Nuke Import](./assets/readme/nuke_import.jpg)
