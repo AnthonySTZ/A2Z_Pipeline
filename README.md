@@ -25,8 +25,16 @@ You can add a new thumbnail the same way as for the saveas window and publish th
 
 ### Open
 
-To **open** a scene, you can use the **A2Z Open Window**. In this window, we can select the **project**, the **department**, the **shot** and the **type** of the scene. Next you will have a **dropdown** of all available scenes in the desired folder (it will automatically select the last scene).
+To **open** a scene, you can use the **A2Z Open Window**. In this window, you can select the **project**, the **department**, the **shot** and the **type** of the scene. Next you will have a **dropdown** of all available scenes in the desired folder (it will automatically select the last scene).
 When you select a scene, you will see the saved **thumbnail** on the left and the **path** on the bottom. 
 Once you selected the desired scene, you can open the raw scene or import it **as reference**. 
 
 ![Maya Open](./assets/readme/maya_open.jpg)
+
+### Export
+
+For exporting assets, you can use the **A2Z ExportMesh Window**. In this window, you can select the **project**, the **department**, the **shot** and the **type** of the mesh. 
+Below you can **name it** and choose the **file extension**.
+You just have to choose if you want to **export selection** by using the checkbox.
+
+![Maya Export](./assets/readme/maya_export.jpg)
