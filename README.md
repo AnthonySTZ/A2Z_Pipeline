@@ -46,5 +46,24 @@ You can also **name** the render.
 It will render using the render settings of the maya scene.
 Using the **Animation** type, it will produce a playblast of the scene. 
 
-![Maya Export](./assets/readme/maya_render.jpg)
+![Maya Render](./assets/readme/maya_render.jpg)
 
+
+## Mari Plugin
+
+### Import
+
+For importing a mesh in Mari, you can use the **A2Z Import Script**. In this window, you can select the **project** and the **shot**.
+Below you will have a **dropdown menu** of all the **meshes** that correspond to the selected shot.
+You can next use the **import button**.
+
+![Mari Import](./assets/readme/mari_import.jpg)
+
+### Export
+
+For exporting a mesh in Mari, you can use the **A2Z Export Script**. In this window, you can select the **project** and the **shot**.
+You can **name** the mesh, the exported textures will herit of this name.
+You will have a **list** of all textures that can be exported, foreach textures you can select the **resolution**, the **colorspace** and the **depth**, you can also let as default (same as source).
+You can next use the **export button**.
+
+![Mari Export](./assets/readme/mari_export.jpg)
