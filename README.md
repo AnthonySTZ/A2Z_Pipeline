@@ -61,7 +61,7 @@ You can next use the **import button**.
 
 ### Export
 
-For exporting a mesh in Mari, you can use the **A2Z Export Script**. In this window, you can select the **project** and the **shot**.
+For exporting textures in Mari, you can use the **A2Z Export Script**. In this window, you can select the **project** and the **shot**.
 You can **name** the mesh, the exported textures will herit of this name.
 You will have a **list** of all textures that can be exported, foreach textures you can select the **resolution**, the **colorspace** and the **depth**, you can also let as default (same as source).
 You can next use the **export button**.
